@@ -32,30 +32,73 @@ new_indication_handler <- function(rcvd_temp) {
     # update temp_events dataframe (append last value):
     temp_events_counter <<- temp_events_counter + 1
     temp_events[temp_events_counter,] <<- list(now, rcvd_temp)
-    
+temp_events
+        ###########################
+    ###########################
+    ##Cyrus Code Addition
+    ###########################
+    ###########################
+   
     # this is just an example how handler may decide the process is stable
     send_signal <- FALSE
     is_stable <- NA
     stable_temp <- NaN
     
-    if ( signals_counter == 0 && difftime(now, initial_timestamp, unit="sec") >= 60 ) {
-        message(now, " PROCESS IS STABLE NOW")
-        send_signal <- TRUE
-        is_stable <- TRUE
-        stable_temp <- rcvd_temp
+    if ( signals_counter == 0 
+         && difftime(now, initial_timestamp, unit="sec") >= 10
+         && diff(temp_events[temp_events_counter,2],temp_events[temp_events_counter-1,2])>0
+         ) {
+            message(now, " PROCESS IS STABLE NOW")
+            send_signal <- TRUE
+            is_stable <- TRUE
+            stable_temp <- rcvd_temp
     }
     else if (signals_counter == 1 && difftime(now, initial_timestamp, unit="sec") >= 120 ) {
-        message(now, " PROCESS IS UNSTABLE NOW")
-        send_signal <- TRUE
-        is_stable <- FALSE
-        stable_temp <- rcvd_temp
+            message(now, " PROCESS IS UNSTABLE NOW")
+            send_signal <- TRUE
+            is_stable <- FALSE
+            stable_temp <- rcvd_temp
     }
     else if (signals_counter == 2 && difftime(now, initial_timestamp, unit="sec") >= 180 ) {
-        message(now, " PROCESS IS STABLE NOW")
-        send_signal <- TRUE
-        is_stable <- TRUE
-        stable_temp <- rcvd_temp
+            message(now, " PROCESS IS STABLE NOW")
+            send_signal <- TRUE
+            is_stable <- TRUE
+            stable_temp <- rcvd_temp
     }
+    
+    else if (signals_counter == 3 && difftime(now, initial_timestamp, unit="sec") >= 400 ) {
+            message(now, " PROCESS IS STABLE NOW")
+            send_signal <- TRUE
+            is_stable <- TRUE
+            stable_temp <- rcvd_temp
+    }
+    #rollapply(c(NA, diff(temp_events$temp)),list(-10:0), function(a) mean(a),fill = NA)
+     
+    # if ( signals_counter == 0 
+    #      && difftime(now, initial_timestamp, unit="sec") >= 10
+    #      # && rollapply(c(NA, diff(temp_events$temp)),list(-10:0),
+    #      #              function(a) mean(a),fill = NA)<=0
+    #      ) {
+    #     message(now, " PROCESS IS UNSTABLE NOW")
+    #     send_signal <- TRUE
+    #     is_stable <- FALSE
+    #     stable_temp <- rcvd_temp
+    # }
+    
+    # else if (signals_counter == 1 && rollapply(c(NA, diff(temp_events$temp)),
+    #                                            list(-10:0), function(a) mean(a),fill = NA)==0 ) {
+    #     message(now, " PROCESS IS STABLE NOW")
+    #     send_signal <- TRUE
+    #     is_stable <- TRUE
+    #     stable_temp <- rcvd_temp
+    # }
+    
+    # else if (signals_counter == 2 && difftime(now, initial_timestamp, unit="sec") >= 180 ) {
+    #     message(now, " PROCESS IS STABLE NOW")
+    #     send_signal <- TRUE
+    #     is_stable <- TRUE
+    #     stable_temp <- rcvd_temp
+    # }
     
     if (send_signal) {
         # update signals dataframe (append last value):
