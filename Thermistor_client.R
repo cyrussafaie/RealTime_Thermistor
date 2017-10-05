@@ -43,35 +43,34 @@ temp_events
     send_signal <- FALSE
     is_stable <- NA
     stable_temp <- NaN
-    
-    if ( signals_counter == 0 
-         && difftime(now, initial_timestamp, unit="sec") >= 10
-         && diff(temp_events[temp_events_counter,2],temp_events[temp_events_counter-1,2])>0
-         ) {
+
+    if ( signals_counter == signals_counter && difftime(now, initial_timestamp, unit="sec") >= 10
+#         && diff(temp_events[temp_events_counter,2],temp_events[temp_events_counter-1,2])>0
+        # && diff(temp_events[,2])<0
+&& temp_events[temp_events_counter,2]-temp_events[temp_events_counter-1,2]<0)
+{
             message(now, " PROCESS IS STABLE NOW")
-            send_signal <- TRUE
-            is_stable <- TRUE
-            stable_temp <- rcvd_temp
-    }
-    else if (signals_counter == 1 && difftime(now, initial_timestamp, unit="sec") >= 120 ) {
-            message(now, " PROCESS IS UNSTABLE NOW")
             send_signal <- TRUE
             is_stable <- FALSE
             stable_temp <- rcvd_temp
     }
-    else if (signals_counter == 2 && difftime(now, initial_timestamp, unit="sec") >= 180 ) {
-            message(now, " PROCESS IS STABLE NOW")
-            send_signal <- TRUE
-            is_stable <- TRUE
-            stable_temp <- rcvd_temp
-    }
     
-    else if (signals_counter == 3 && difftime(now, initial_timestamp, unit="sec") >= 400 ) {
-            message(now, " PROCESS IS STABLE NOW")
-            send_signal <- TRUE
-            is_stable <- TRUE
-            stable_temp <- rcvd_temp
-    }
+
+    
+    # else if (signals_counter == 2 && difftime(now, initial_timestamp, unit="sec") >= 180 ) {
+    #         message(now, " PROCESS IS STABLE NOW")
+    #         send_signal <- TRUE
+    #         is_stable <- TRUE
+    #         stable_temp <- rcvd_temp
+    # }
+    # 
+    # else if (signals_counter == 3 && difftime(now, initial_timestamp, unit="sec") >= 400 ) {
+    #         message(now, " PROCESS IS STABLE NOW")
+    #         send_signal <- TRUE
+    #         is_stable <- TRUE
+    #         stable_temp <- rcvd_temp
+    # }
+    
     #rollapply(c(NA, diff(temp_events$temp)),list(-10:0), function(a) mean(a),fill = NA)
      
     # if ( signals_counter == 0 
