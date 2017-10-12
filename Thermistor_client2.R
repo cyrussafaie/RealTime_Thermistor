@@ -68,21 +68,21 @@ new_indication_handler <- function(rcvd_temp) {
         stable_temp <- rcvd_temp
 }
 
-# else if ( is.even(signals_counter) &&
-#          (difftime(temp_events[temp_events_counter,1], initial_timestamp, unit = "sec") >= 20) &&
-#          (zoo::rollmean(
-#                  c(0, na.trim(diff(temp_events[1:temp_events_counter, 2], 1))),
-#                  220
-#                  ,
-#                  fill = NA,
-#                  align = c("right")
-#          ) == 0)[temp_events_counter])
-# {
-#         message(now, " PROCESS IS STABLE NOW")
-#         send_signal <- TRUE
-#         is_stable <- TRUE
-#         stable_temp <- rcvd_temp
-# }
+else if ( is.even(signals_counter) &&
+         (difftime(temp_events[temp_events_counter,1], initial_timestamp, unit = "sec") >= 25) &&
+         (zoo::rollmean(
+                 c(0, na.trim(diff(temp_events[1:temp_events_counter, 2], 1))),
+                 230
+                 ,
+                 fill = NA,
+                 align = c("right")
+         ) == 0)[temp_events_counter])
+{
+        message(now, " PROCESS IS STABLE NOW")
+        send_signal <- TRUE
+        is_stable <- TRUE
+        stable_temp <- rcvd_temp
+}
     
     
     
