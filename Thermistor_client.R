@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript
+ #!/usr/bin/env Rscript
 source("Thermistor_connection.R")
 
 # global vars
