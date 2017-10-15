@@ -41,9 +41,10 @@ new_indication_handler <- function(rcvd_temp) {
     is.odd <- function(x) x %% 2 != 0   
     
     if (signals_counter == 0 &&
-        (difftime(now, initial_timestamp, unit = "sec") >= 25) && 
-        (zoo::rollmean(c(0, na.trim(diff(temp_events[1:temp_events_counter, 2], 1))), 220
-                      , fill = NA, align = c("right")) == 0)[temp_events_counter]
+        (difftime(now, initial_timestamp, unit = "sec") >= 60) && 
+        #(difftime(signals[signals_counter,1], signals[signals_counter-1,1], unit = "sec") >= 35) &&
+        (abs(zoo::rollmean(c(0, na.trim(diff(temp_events[1:temp_events_counter, 2], 1))), 400
+                      , fill = NA, align = c("right"))) <= 0.0005)[temp_events_counter]
     )
             {
             message(now, " PROCESS IS STABLE NOW")
@@ -54,13 +55,14 @@ new_indication_handler <- function(rcvd_temp) {
 
         else if (is.odd(signals_counter) &&
          (difftime(temp_events[temp_events_counter,1], initial_timestamp, unit = "sec") >= 10) &&
-         (zoo::rollmean(
+         (difftime(now, signals[signals_counter,1], unit = "sec") >= 50) &&
+         (abs(zoo::rollmean(
                  c(0, na.trim(diff(temp_events[1:temp_events_counter, 2], 1))),
-                 100
+                 400
                  ,
                  fill = NA,
                  align = c("right")
-         ) != 0)[temp_events_counter])
+         )) >= 0.001)[temp_events_counter])
 {
         message(now, " PROCESS IS UNSTABLE NOW")
         send_signal <- TRUE
@@ -69,14 +71,15 @@ new_indication_handler <- function(rcvd_temp) {
 }
 
 else if ( is.even(signals_counter) &&
-         (difftime(temp_events[temp_events_counter,1], initial_timestamp, unit = "sec") >= 25) &&
-         (zoo::rollmean(
+         (difftime(temp_events[temp_events_counter,1], initial_timestamp, unit = "sec") >= 35) &&
+         (difftime(now, signals[signals_counter,1], unit = "sec") >= 50) &&
+         (abs(zoo::rollmean(
                  c(0, na.trim(diff(temp_events[1:temp_events_counter, 2], 1))),
-                 230
+                 400
                  ,
                  fill = NA,
                  align = c("right")
-         ) == 0)[temp_events_counter])
+         )) <= 0.0005)[temp_events_counter])
 {
         message(now, " PROCESS IS STABLE NOW")
         send_signal <- TRUE
